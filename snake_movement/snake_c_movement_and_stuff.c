@@ -33,7 +33,7 @@ void Direction_change { // if interrupt detected
     }
 }
 
-void delay{ // 250 milisecond dekat
+void Delay{ // 250 milisecond dekat
     for (int i = 0; i<)
     {
         i+=1
