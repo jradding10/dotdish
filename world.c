@@ -1,3 +1,18 @@
+bool world[80][60];
+
+int apples[10][2] { {15, 11},
+                    {60, 30},
+                    {25, 42},
+                    {45, 47},
+                    {3,  20},
+                    {74, 49},
+                    {23, 78},
+                    {28, 77},
+                    {43, 27},
+                    {69, 13}};
+
+int a = 0;
+
 int snake[5][2] {{0,0}, {NULL, NULL}, {NULL, NULL}, {NULL, NULL}, {NULL, NULL}};
 
 int len = 1;
@@ -5,9 +20,14 @@ int p = 0;
 int hx = 0;
 int hy = 0;
 
+world[snake[p][0]][snake[p][1]] = 1;
+world[apples[a][0]][apples[a][1]] = 1;
+
 void snakeMove (x, y) {
+    world[snake[p][0]][snake[p][1]] = 0;
     snake[p][0] = hx + x; //Replaces oldest value with new location
     snake[p][1] = hy + y;
+    world[snake[p][0]][snake[p][1]] = 1;
     hx += x; //Moves the head pointer
     hy += y;
     if (p == len) //Rotates array pointer
@@ -21,6 +41,7 @@ void eat (x,y) {
     int oldY = snake[p][1];
     snake[p][0] = hx+x; //Overwrites data
     snake[p][1] = hy+y;
+    world[snake[p][0]][snake[p][1]] = 1;
     for (i=p;i<=len+1;i++) { //Iterates through all items in array after current location pushing back one location
         nextX = snake[i+1][0];
         nextY = snake[i+1][1];
@@ -36,6 +57,10 @@ void eat (x,y) {
     else
         p += 1;
     len += 1; //Adds 1 to length
+    world[apples[a][0]][apples[a][1]] = 0;
+    a += 1;
+    world[apples[a][0]][apples[a][1]] = 1;
+
 }
 
 int BTND_RD = 0;

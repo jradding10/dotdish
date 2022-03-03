@@ -1,4 +1,4 @@
-void Move { 
+void Move () { 
     
     if BTND_RD == 1 or BTNU_RD == 1 or BTNL_RD == 1 or BTNR_RD == 1
     {
@@ -13,7 +13,7 @@ void Move {
 }
 
 
-void Direction_change { // if interrupt detected
+void Direction_change () { // if interrupt detected
 
     if BTNU_RD == 1{
         y_mv = 1; //so we know direction is up
@@ -24,16 +24,16 @@ void Direction_change { // if interrupt detected
         x_mv = 0;
     }
     else if BTNL_RD == 1{
-        x_mv = -1; // direction is down
+        x_mv = -1; // direction is left
         y_mv = 0;
     }
     else if BTNR_RD == 1{
-        x_mv = -1; // direction is down
+        x_mv = 1; // direction is right
         y_mv = 0;
     }
 }
 
-void delay{ // 250 milisecond dekat
+void delay () { // 250 milisecond dekat
     for (int i = 0; i<)
     {
         i+=1
