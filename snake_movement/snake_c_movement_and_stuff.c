@@ -7,7 +7,7 @@ void Move () {
     else{
     Delay()
     }
-    s_xcor += x_mv; // move based on the set direction
+    s_xcor += x_mv; // snake cors move based on the set direction
     s_ycor += y_mv;// move y 
 
 }
@@ -33,8 +33,8 @@ void Direction_change () { // if interrupt detected
     }
 }
 
-void delay () { // 250 milisecond dekat
-    for (int i = 0; i<)
+void Delay{ // 250 milisecond dekat
+    for (int i = 0; i< 1787000)
     {
         i+=1
         
