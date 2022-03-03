@@ -24,7 +24,7 @@ void Direction_change { // if interrupt detected
         x_mv = 0;
     }
     else if BTNL_RD == 1{
-        x_mv = -1; // direction is down
+        x_mv = 1; // direction is down
         y_mv = 0;
     }
     else if BTNR_RD == 1{
