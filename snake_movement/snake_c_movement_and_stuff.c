@@ -7,7 +7,7 @@ void Move {
     else{
     Delay()
     }
-    s_xcor += x_mv; // move based on the set direction
+    s_xcor += x_mv; // snake cors move based on the set direction
     s_ycor += y_mv;// move y 
 
 }
