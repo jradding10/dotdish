@@ -1,13 +1,19 @@
 
+
 .eqv BG_COLOR, 0x0F	 # light blue (0/7 red, 3/7 green, 3/3 blue)
+.eqv delay_num, 0x1000000
 .eqv dot_color, 0xFF
+.eqv  food_color, 0x04
 .eqv VG_ADDR, 0x11000120
 .eqv VG_COLOR, 0x11000140
 .eqv BTNU_RD, 0x11001100
 .eqv BTND_RD, 0x11001110
 .eqv BTNR_RD, 0x11001120
 .eqv BTNL_RD, 0x11001130
-
+.data
+xs: .word 13, 5, 40, 60, 30
+ys: .word 45, 23, 14, 20, 43
+.text
 main:
     li sp, 0x10000     #initialize stack pointer
     li s2, VG_ADDR     #load MMIO addresses 
@@ -26,7 +32,7 @@ main:
 
 
 loop: # get new x cors 
-    
+    # set food and food cors
     lw s9, 0(s4) #up button read
     lw s10, 0(s5) #down button read
     lw s11, 0(s4) #right
@@ -49,7 +55,8 @@ loop: # get new x cors
     addi a5, a5, -1
      
      b4: call draw_snake
-
+     #call draw_food
+     call delay
     j loop
 
 draw_dot:
@@ -67,17 +74,7 @@ draw_dot:
 draw_snake:
         addi sp,sp,-4
         sw ra, 0(sp)
-	andi t0,a5,0x7F	# select bottom 7 bits (col)
-	andi t1,a6,0x3F	# select bottom 6 bits  (row)
-	slli t1,t1,7	#  {a1[5:0],a0[6:0]} 
-	or t0,t1,t0	# 13-bit address
-	sw t0, 0(s2)	# write 13 address bits to register
-	sw a4, 0(s3)	# write color data to frame buffer
-	addi sp,sp,4
-	ret
-del_snake:
-        addi sp,sp,-4
-        sw ra, 0(sp)
+         li a3, dot_color #dot color
 	andi t0,a5,0x7F	# select bottom 7 bits (col)
 	andi t1,a6,0x3F	# select bottom 6 bits  (row)
 	slli t1,t1,7	#  {a1[5:0],a0[6:0]} 
@@ -86,6 +83,44 @@ del_snake:
 	sw a3, 0(s3)	# write color data to frame buffer
 	addi sp,sp,4
 	ret
+draw_food:
+        addi sp,sp,-4
+        sw ra, 0(sp)
+         li a3, food_color #dot color
+         
+	andi t0,a5,0x7F	# select bottom 7 bits (col)
+	andi t1,a6,0x3F	# select bottom 6 bits  (row)
+	
+	slli t1,t1,7	#  {a1[5:0],a0[6:0]} 
+	or t0,t1,t0	# 13-bit address
+	sw t0, 0(s2)	# write 13 address bits to register
+	sw a3, 0(s3)	# write color data to frame buffer
+	
+	addi sp,sp,4
+	ret
+	
+del_snake: # deletes snake location after it moves
+        addi sp,sp,-4
+        sw ra, 0(sp)
+	andi t0,a5,0x7F	# select bottom 7 bits (col)
+	andi t1,a6,0x3F	# select bottom 6 bits  (row)
+	slli t1,t1,7	#  {a1[5:0],a0[6:0]} 
+	li a3, BG_COLOR #dot color
+	or t0,t1,t0	# 13-bit address
+	sw t0, 0(s2)	# write 13 address bits to register
+	sw a3, 0(s3)	# write color data to frame buffer
+	addi sp,sp,4
+	ret
+	
+delay:addi sp,sp,-4
+     sw ra, 0(sp)
+     li a2, 0
+     li a1, 1700000
+delay_int:
+    addi a2,a2, 1
+    bne a2, a1, delay_int
+    addi sp,sp,4
+    ret
 
 # draws a horizontal line from (a0,a1) to (a2,a1) using color in a3
 # Modifies (directly or indirectly): t0, t1, a0, a2
@@ -131,6 +166,8 @@ start:	li a0, 0
 	lw ra, 0(sp)
 	addi sp,sp,4
 	ret
+
+
 
 
 
