@@ -8,7 +8,7 @@
 .eqv BTNR_RD, 0x11001130
 .eqv SSEG, 0x11000040
 .data
-FOOD: .word 15, 11,   59, 30,   25, 42,   45, 47,   3, 20,   49, 74,   23, 38,   28, 57,   43, 27,   13, 69
+FOOD: .word 15, 11,   58, 30,   25, 42,   45, 47,   3, 20,   49, 74,   23, 38,   28, 57,   43, 27,   13, 69
 .text
 
 .global main 
@@ -18,10 +18,10 @@ main:
 
     li s1, 25 # this is the snake's x cor
     li s2, 35 # this is the snake's y cor
-    lw s3, 0(s1) # load x food coord
-    lw s4, 4(s1) # load y food coord
-    li s5, 0
     la s6, FOOD
+    lw s3, 0(s6) # load x food coord
+    lw s4, 4(s6) # load y food coord
+    li s5, 0
     la s7, VG_ADDR     #load MMIO addresses
     la s8, VG_COLOR
     la s9, SSEG
@@ -37,62 +37,73 @@ loop: # get new x cors
     
     mv a0, s1
     mv a1, s2
-    
+    call del_dot
 
     li t2, BTNU_RD
     lw t3, 0(t2)
     beqz t3, b1#skip over if BTNU is pressed
-    li a3, BG_COLOR 
-    call draw_dot
+    #call del_dot
     addi s2, s2, -1
     
 b1: li t2, BTND_RD
     lw t3, 0(t2)
     beqz t3, b2#skip over if BTNU is pressed
-    li a3, BG_COLOR 
-    call draw_dot
+    #call del_dot
     addi s2, s2, 1
     
 b2: li t2, BTNR_RD
     lw t3, 0(t2)
-    beqz t3, b3#skip over if BTNU is pressed
-    li a3, BG_COLOR 
-    call draw_dot
+    beqz t3, b3#skip over if BTNU is pressed 
+    #call del_dot
     addi s1, s1, 1
     
 b3: li t2, BTNL_RD
     lw t3, 0(t2)
     beqz t3, b4#skip over if BTNU is pressed
-    li a3, BG_COLOR 
-    call draw_dot
+    #call del_dot
     addi s1, s1, -1
     
 b4: li a3, 0xFF
+    mv a0, s1
+    mv a1, s2
     call draw_dot
      
-    
-    
+    mv a0, s3
+    mv a1, s4
+    call del_dot
     bne s1, s3, e0 # check if snake matches x coord
     	bne s2, s4, e0 # check if snake matches y coord
-    		li a3, BG_COLOR
-    		call draw_dot
+    		call del_dot
     		addi s6, s6, 8	# iterate to next food address
 		lw s3, 0(s6)	# load x food coord
     		lw s4, 4(s6)	# load y food coord
 		addi s5, s5, 1
 e0: mv a0, s3
     mv a1, s4
-    li a3, 4
+    li a3, 2
     call draw_dot
     call delay
     j loop
 
 draw_dot:
-       addi sp,sp,-4
-       sw ra, 0(sp)
+	addi sp,sp,-4
+	sw ra, 0(sp)
 	andi t0,a0,0x7F	# select bottom 7 bits (col)
 	andi t1,a1,0x3F	# select bottom 6 bits  (row)
 	slli t1,t1,7	#  {a1[5:0],a0[6:0]} 
+	or t0,t1,t0	# 13-bit address
+	sw t0, 0(s7)	# write 13 address bits to register
+	sw a3, 0(s8)	# write color data to frame buffer
+	addi sp,sp,4
+	ret
+	
+del_dot:
+	addi sp,sp,-4
+        sw ra, 0(sp)
+	andi t0,a0,0x7F	# select bottom 7 bits (col)
+	andi t1,a1,0x3F	# select bottom 6 bits  (row)
+	slli t1,t1,7	#  {a1[5:0],a0[6:0]} 
+	li a3, BG_COLOR #dot color
 	or t0,t1,t0	# 13-bit address
 	sw t0, 0(s7)	# write 13 address bits to register
 	sw a3, 0(s8)	# write color data to frame buffer
