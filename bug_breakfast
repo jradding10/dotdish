@@ -32,7 +32,7 @@ main:
     lw t5, 0(s1) # load x food coord
     lw t6, 4(s1) # load y food coord
     la s8, SSEG
-    li s0, 0
+    li t3, 0
     call draw_background  # must not modify s2, s3
 
 
@@ -40,7 +40,7 @@ main:
 loop: # get new x cors 
     # set food and food cors
 
-    sw s0,0(s8)
+    sw t3,0(s8)
     
     lw s9, 0(s4) #up button read
     lw s10, 0(s5) #down button read
@@ -73,7 +73,7 @@ b4: call draw_snake
     		addi s1, s1, 8	# iterate to next food address
 		lw t5, 0(s1)	# load x food coord
     		lw t6, 4(s1)	# load y food coord
-		addi s0, s0, 1
+		addi t3, t3, 1
 
 e0: call draw_food
     call delay
